@@ -24,7 +24,7 @@ The following Matlab toolboxes are required:
 
 ### Single volume
 
-Read in an OCT volume from HDF5 file:
+Read in a folder with image files of the scans:
 ```
 [ILM, RPE, ISOS, THICKNESS] = processVolumeRELAYER(sourceFolder, machineCode, destinationFolder, verbose)
 ```
