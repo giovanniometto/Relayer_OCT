@@ -1,0 +1,34 @@
+# Relayer_OCT
+OCT segmentation code for RELAYER
+
+Author: Giovanni Ometto
+
+Work address: C274 Tait Building City, University of London, London, EC1V 0HB (UK)
+
+Email: giovanni.ometto@city.ac.uk
+
+Website: http://www.city.ac.uk
+
+## Description
+
+Code for the segmentation and analysis of OCT scans
+
+## Dependencies
+
+The following Matlab toolboxes are required:
+
+* Image Processing
+* Curve Fitting Toolbox
+* Statistics and Machine Learning Toolbox
+
+## Entry points
+
+### Single volume
+
+Read in a folder with OCT image files named sequentially:
+```
+[ILM, RPE, ISOS, THICKNESS] = processVolumeRELAYER(imageFolder, machineCode, destinationFolder, verbose)
+```
+Process the volume to extract the ILM, RPE, ISOS and THICKNESS. Saves the results as .csv files and a segmented scans as image files with segmentation overimposed.
+
+
