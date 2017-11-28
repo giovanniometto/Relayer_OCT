@@ -1,4 +1,4 @@
-function [ILM, RPE, ISOS, THICKNESS] = processVolumeRELAYER(octVolume, machineCode, folder, verbose)
+function [ILM, RPE, ISOS, THICKNESS] = processVolumeRELAYER(folderORh5file, machineCode, destinationFolder, verbose)
 
 % Author: Giovanni Ometto
 % Work address: C274 Tait Building City, University of London, London, EC1V 0HB (UK)
@@ -14,11 +14,46 @@ if nargin<4
     verbose = 0;
 end
 
+if ~ischar(folderORh5file)
+    disp('Please provide a folder containing sequentially-named image files.')
+    return
+end
+
+if isdir(folderORh5file)
+    
+    imExt = ['tif';'jpg';'bmp';'png'];
+    tifFiles = dir(fullfile(imFolder,'*.tif'));
+    jpgFiles = dir(fullfile(imFolder,'*.jpg'));
+    bmpFiles = dir(fullfile(imFolder,'*.bmp'));
+    pngFiles = dir(fullfile(imFolder,'*.png'));
+    foundExt = [~isempty(tifFiles) ~isempty(jpgFiles) ~isempty(bmpFiles) ~isempty(pngFiles)];
+    
+    if  sum(foundExt) == 1 
+        octVol = makeOctVolumeFromIm (folderORh5file, imExt(find(foundExt),:));
+    else
+        disp('Please provide a folder containing sequentially-named image files.')
+        return
+    end
+    
+else
+    
+    [~,~,ext] = fileparts(folderORh5file);
+    if ext == '.h5'
+        data_oct = hdf5read(folderORh5file,'/oct');
+        octVol = permute(data_oct,[2,1,3]);
+    else
+        disp('The provided file is not .h5')
+        return
+    end
+
+end
+
+
 if machineCode == 2     % Topcon "3D oCT-2000" px*2.3 = micrometers 
     factor = 0.6693;    % = 2.59/3.87 = 0.6693
-    octVol = resizeVolumeOCT(octVolume, factor);
+    octVol = resizeVolumeOCT(octVol, factor);
 else
-    octVol = octVolume;
+    octVol = folderORh5file;
 end
     
 % get parameters
@@ -212,7 +247,7 @@ if verbose
 end
 
 % save results
-saveResultsAndImages (octVolume, folder, ILM, RPE, ISOS, THICKNESS);
+saveResultsAndImages (octVol, destinationFolder, ILM, RPE, ISOS, THICKNESS);
     
 end
 
@@ -311,7 +346,7 @@ csvwrite( fullfile(folder,'THICKNESS.csv'), THICKNESS);
 % save image files of Scans with the segmentation
 for i = 1: size(ILM,1)
     
-    fh = figure('Visible','off'); imshow(flattenTrimOct(octVolume(:,:,i)));
+    fh = figure('Visible','off'); imshow(flattenTrimOct(octVolume(:,:,i)),'border','tight');
     
     hold on;
     plot(1:size(ILM,2), ILM(i,:), 'r', 'linewidth',2);
@@ -319,11 +354,11 @@ for i = 1: size(ILM,1)
     hold off
     
     if      i > 99
-        print(fh,fullfile(folder, num2str(i)),'-dbmp256');
+        saveas(fh,fullfile(folder, [num2str(i) '.jpg'])); % print(fh,fullfile(folder, num2str(i)),'-dbmp256');
     elseif  i > 9
-        print(fh,fullfile(folder, ['0' num2str(i)]),'-dbmp256');
+        saveas(fh,fullfile(folder, ['0' num2str(i) '.jpg'])); % print(fh,fullfile(folder, ['0' num2str(i)]),'-dbmp256');
     else
-        print(fh,fullfile(folder, ['00' num2str(i)]),'-dbmp256');
+        saveas(fh,fullfile(folder, ['00' num2str(i) '.jpg'])); % print(fh,fullfile(folder, ['00' num2str(i)]),'-dbmp256');
     end
 end
 
