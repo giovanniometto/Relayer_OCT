@@ -19,13 +19,13 @@ if ~ischar(folderORh5file)
     return
 end
 
-if isdir(folderORh5file)
+if isdir(fullfile(folderORh5file))
     
     imExt = ['tif';'jpg';'bmp';'png'];
-    tifFiles = dir(fullfile(imFolder,'*.tif'));
-    jpgFiles = dir(fullfile(imFolder,'*.jpg'));
-    bmpFiles = dir(fullfile(imFolder,'*.bmp'));
-    pngFiles = dir(fullfile(imFolder,'*.png'));
+    tifFiles = dir(fullfile(folderORh5file,'*.tif'));
+    jpgFiles = dir(fullfile(folderORh5file,'*.jpg'));
+    bmpFiles = dir(fullfile(folderORh5file,'*.bmp'));
+    pngFiles = dir(fullfile(folderORh5file,'*.png'));
     foundExt = [~isempty(tifFiles) ~isempty(jpgFiles) ~isempty(bmpFiles) ~isempty(pngFiles)];
     
     if  sum(foundExt) == 1 
@@ -52,8 +52,6 @@ end
 if machineCode == 2     % Topcon "3D oCT-2000" px*2.3 = micrometers 
     factor = 0.6693;    % = 2.59/3.87 = 0.6693
     octVol = resizeVolumeOCT(octVol, factor);
-else
-    octVol = folderORh5file;
 end
     
 % get parameters

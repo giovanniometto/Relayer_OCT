@@ -10,18 +10,20 @@ if nfiles>0
     oct = flattenTrimOct (oct);
     octVolume = cat(3,oct);
     
-    for i = 2: nfiles
-        
-        if str2double (Files(i).name(end-6:end-4)) ~= nSuffix + 1
-            disp('Image files do not have sequential suffixes. Cannot continue');
-            return
-        else
-            oct = imread(fullfile(imFolder, Files(i).name));
-            oct = flattenTrimOct (oct);
-            octVolume = cat(3,octVolume,oct);
-            nSuffix = nSuffix+1;
+    if nfiles > 1
+        for i = 2: nfiles
+
+            if str2double (Files(i).name(end-6:end-4)) ~= nSuffix + 1
+                disp('Image files do not have sequential suffixes. Cannot continue');
+                return
+            else
+                oct = imread(fullfile(imFolder, Files(i).name));
+                oct = flattenTrimOct (oct);
+                octVolume = cat(3,octVolume,oct);
+                nSuffix = nSuffix+1;
+            end
+
         end
-            
     end
     
 else
