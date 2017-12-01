@@ -30,6 +30,7 @@ if isdir(fullfile(folderORh5file))
     
     if  sum(foundExt) == 1 
         octVol = makeOctVolumeFromIm (folderORh5file, imExt(find(foundExt),:));
+        octVolume = octVol; % store for results image printout
     else
         disp('Please provide a folder containing sequentially-named image files.')
         return
@@ -41,6 +42,7 @@ else
     if ext == '.h5'
         data_oct = hdf5read(folderORh5file,'/oct');
         octVol = permute(data_oct,[2,1,3]);
+        octVolume = octVol; % store for results image printout
     else
         disp('The provided file is not .h5')
         return
@@ -245,7 +247,7 @@ if verbose
 end
 
 % save results
-saveResultsAndImages (octVol, destinationFolder, ILM, RPE, ISOS, THICKNESS);
+saveResultsAndImages (octVolume, destinationFolder, ILM, RPE, ISOS, THICKNESS);
     
 end
 
