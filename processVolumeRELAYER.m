@@ -242,12 +242,13 @@ else % if not 5 or more scans
     
 end
 
-if verbose
-    surfThickness(THICKNESS, machineCode)
-end
-
 % save results
 saveResultsAndImages (octVolume, destinationFolder, ILM, RPE, ISOS, THICKNESS);
+
+if verbose
+    close all;
+    surfThickness(THICKNESS)
+end
     
 end
 
@@ -365,23 +366,17 @@ end
 end
 
 
-function surfThickness(THICKNESS, machineCode)
+function surfThickness(THICKNESS)
 
     figure; 
-    if machineCode == 2
-        px2micron=2.59; % TOPCON 3D-OCT 2000
-    else
-        px2micron=3.87; % Heidelberg Engineering Spectralis
-    end
-    figure; 
-    surf(THICKNESS.* px2micron, 'edgecolor','none');
+    surf(THICKNESS, 'edgecolor','none');
     hold on
     axis tight
     colormap jet
     set(gca, 'CLim', [200, 500]);
     cb = colorbar;
     ylabel(cb, 'thickness (\mum)')
-    zlim([0 max(THICKNESS(:))*px2micron]);
+    zlim([0 max(THICKNESS(:))]);
 end
 
 
