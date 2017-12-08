@@ -25,3 +25,9 @@ Read in a folder with image files of the scans:
 [ILM, RPE, ISOS, THICKNESS] = processVolumeRELAYER(sourceFolder, machineCode, destinationFolder, verbose)
 ```
 Process the volume to extract the ILM, RPE, ISOS and THICKNESS, save csv files in the destination folder with images of the scans and segmentation overimposed.
+
+### Example
+
+```
+[ILM, RPE, ISOS, THICKNESS] = processVolumeRELAYER('sourceFolder', 1, 'test')
+```
