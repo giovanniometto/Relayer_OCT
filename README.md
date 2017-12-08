@@ -2,11 +2,7 @@
 
 Author: Giovanni Ometto
 
-Work address: C274 Tait Building City, University of London, London, EC1V 0HB (UK)
-
-Email: giovanni.ometto@city.ac.uk
-
-Website: http://www.city.ac.uk
+Originally designed and developed in December 2016.
 
 ## Description
 

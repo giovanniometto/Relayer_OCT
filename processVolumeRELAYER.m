@@ -8,7 +8,7 @@ function [ILM, RPE, ISOS, THICKNESS] = processVolumeRELAYER(folderORh5file, mach
 
 % machineCode
 % 1: Heidelberg Engineering "Spectralis" px*3.87 = micrometers 
-% 2: Topcon "3D oCT-2000" px*2.3 = micrometers 
+% 2: Topcon "3D OCT-2000" px*2.3 = micrometers 
 
 if nargin<4
     verbose = 0;
