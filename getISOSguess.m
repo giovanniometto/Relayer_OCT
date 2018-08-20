@@ -36,8 +36,8 @@ gradientImT = dGaussY(greyIm,round(6*coeff),round(1*coeff),1);
 % get a gamma distribution function with mode @ 17.568 (calculated from
 % images) starting from 10 pixels (delay) above the RPE
 delay = 5; 
-b=15; % skewness
-a=(17.568-delay)/b+1; % peak
+b=15; % scale
+a=(17.568-delay)/b+1; % shape
 gammaD = [ zeros(1, delay-1), gampdf((0:1:100), a, b )];
 
 % set the gamma dist function above every reading of RPE 
