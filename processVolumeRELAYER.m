@@ -7,8 +7,11 @@ function [ILM, RPE, ISOS, THICKNESS] = processVolumeRELAYER(folderORh5file, mach
 % Jan 2017; Last revision: Oct 2017
 
 % machineCode
-% 1: Heidelberg Engineering "Spectralis" px*3.87 = micrometers 
-% 2: Topcon "3D OCT-2000" px*2.3 = micrometers 
+% 1: Heidelberg Engineering "Spectralis"    px*3.87 = micrometers 
+% 2: Topcon "3D OCT-2000"                   px*2.59 = micrometers 
+% 3: OptoVue "AngioVue"                     px*3.05 = micrometers 
+
+setGlobalDevice(machineCode);
 
 if nargin<4
     verbose = 0;
@@ -51,8 +54,12 @@ else
 end
 
 
-if machineCode == 2     % Topcon "3D oCT-2000" px*2.3 = micrometers 
-    factor = 0.6693;    % = 2.59/3.87 = 0.6693
+if      getGlobalDevice == 2     % Topcon "3D oCT-2000" px*2.59 = micrometers 
+    factor = 0.6693;             % = 2.59/3.87 = 0.6693
+    octVol = resizeVolumeOCT(octVol, factor);
+    
+elseif  getGlobalDevice == 3     % OptoVue "AngioVue" 
+    factor = 0.7877;             % = 3.04853/3.87 
     octVol = resizeVolumeOCT(octVol, factor);
 end
     
@@ -207,15 +214,17 @@ if nscans >= (distance*2+1)
 
     THICKNESS = RPE-ILM;
     
-    if machineCode == 2
+    if getGlobalDevice ~= 1 
         THICKNESS = THICKNESS./factor;
         RPE = RPE./factor;
         ILM = ILM./factor;
         ISOS = ISOS./factor;
     end
     
-    if machineCode == 2
+    if getGlobalDevice == 2
         THICKNESS = THICKNESS.*2.59; % TOPCON 3D-OCT 2000
+    elseif getGlobalDevice == 3
+        THICKNESS = THICKNESS.*3.05; % OptoVue AngioVue
     else
         THICKNESS = THICKNESS.*3.87; % Heidelberg Engineering Spectralis
     end
@@ -227,15 +236,17 @@ else % if not 5 or more scans
     
     THICKNESS = RPE-ILM;
     
-    if machineCode == 2
+    if getGlobalDevice ~= 1 
         THICKNESS = THICKNESS./factor;
         RPE = RPE./factor;
         ILM = ILM./factor;
         ISOS = ISOS./factor;
     end
     
-    if machineCode == 2
+    if getGlobalDevice == 2
         THICKNESS = THICKNESS.*2.59; % TOPCON 3D-OCT 2000
+	elseif getGlobalDevice == 3
+        THICKNESS = THICKNESS.*3.05; % OptoVue AngioVue
     else
         THICKNESS = THICKNESS.*3.87; % Heidelberg Engineering Spectralis
     end
@@ -262,7 +273,11 @@ function [ilm, rpe, isos] = segmentFromScratch(im)
     
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
     rpeGuess  = getRPEguess(im, ilm, octMask);
-    rpe = snakeRPE(im,rpeGuess);
+    if getGlobalDevice == 3
+        rpe = snakeRPE_OptoVue(im, rpeGuess);
+    else
+        rpe = snakeRPE(im, rpeGuess);
+    end
    
     isosGuess = getISOSguess(im, rpe, ilm, octMask);
     isos = snakeISOS(im, isosGuess);
@@ -274,7 +289,11 @@ end
 
 function [ilm, rpe, isos] = segmentFromGuess(im, ilmGuess, rpeGuess, isosGuess)
     ilm = snakeILM(im, ilmGuess);
-    rpe = snakeRPE(im, rpeGuess);
+    if getGlobalDevice == 3
+        rpe = snakeRPE_OptoVue(im, rpeGuess);
+    else
+        rpe = snakeRPE(im, rpeGuess);
+    end
     isos = snakeISOS(im, isosGuess);
 end
 
@@ -377,6 +396,7 @@ function surfThickness(THICKNESS)
     cb = colorbar;
     ylabel(cb, 'thickness (\mum)')
     zlim([0 max(THICKNESS(:))]);
+    
 end
 
 
@@ -385,4 +405,15 @@ function imoct = flattenTrimOct (imoct)
 if size(imoct,3) == 3, imoct = rgb2gray(imoct); end
 if (size(imoct,2) > 2*size(imoct,1) && size(imoct,2) ~= 1024), imoct = imoct(:,size(imoct,1)+1:end); end
 
+end
+
+
+function setGlobalDevice(val)
+global device
+device = val;
+end
+
+function d = getGlobalDevice
+global device
+d = device;
 end

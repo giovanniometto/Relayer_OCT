@@ -19,10 +19,13 @@ cols = size(im,2);
 rows = size(im,1);
 
 
-% create a new image and relative mask with zero padding at the top
+% create a new image and relative mask with padding at the top equivalent
+% to the average intensity of the top row (usially near zero, OptoVue may 
+% be not)
 emptyRows = round(rows*.1);
 % emptyRows = round(0);
-zerosM = zeros(rows+emptyRows,cols);
+onesM  = ones(rows+emptyRows,cols);
+zerosM = onesM .* mean(greyIm(2,:));
 zerosM(emptyRows+1:end,:) = greyIm;
 greyIm = zerosM;
 falseM = false(rows+emptyRows,cols);
@@ -40,7 +43,7 @@ step = round(15*coeff);
 halfW = round(7*coeff);
 
 % get the gradient based edges Y profile @ point xSteps(i) 
-gradientIm = imgradient(imgaussfilt(greyImG,1),'sobel'); 
+gradientIm = imgradient(greyImG,'sobel'); 
 
 % get the indexes of the top border of the mask
 [~, topY] = max( OCTmask, [], 1 );
